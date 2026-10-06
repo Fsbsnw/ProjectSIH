@@ -20,6 +20,7 @@ public:
 	bool TryGetAcquiredClueIDs(FGameplayTagContainer& OutClueIDs) const;
 	EPFMeetingClaimSelectResult TrySelectClaim(const FGameplayTag& ClaimID);
 	EPFMeetingSubmitResult TrySubmitClue(const FGameplayTag& ClueID);
+	bool TryCancelSelection();
 	bool TryCompleteMeeting(const FGameplayTag& CaseID);
 
 private:
@@ -35,7 +36,7 @@ private:
 
 	FGameplayTag m_CaseID;
 	FGameplayTagContainer m_AcquiredClueIDs;
-	FGameplayTagContainer m_RevealedWeaknessIDs;
+	TArray<FGameplayTag> m_RevealedWeaknessIDs;
 	FGameplayTag m_SelectedClaimID;
 	EPFMeetingInputStep m_InputStep = EPFMeetingInputStep::Inactive;
 };

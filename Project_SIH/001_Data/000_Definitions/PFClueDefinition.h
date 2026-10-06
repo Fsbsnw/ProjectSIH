@@ -136,7 +136,7 @@ private:
 		meta = (
 			AllowPrivateAccess = "true",
 			DisplayName = "Revealed Weakness ID",
-			Categories = "ID.Weakness",
-			ToolTip = "정답 제출 시 공개되는 Weakness의 GameplayTag입니다. ID.Weakness.* 형태입니다"))
+			Categories = "ID.Element",
+			ToolTip = "정답 제출 시 공개되는 약점 속성의 GameplayTag입니다. ID.Element.* 형태입니다"))
 	FGameplayTag m_RevealedWeaknessID;
 };

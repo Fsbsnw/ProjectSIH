@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Engine/DeveloperSettings.h"
 #include "PFGameFlowSettings.generated.h"
 
@@ -9,7 +10,7 @@ class UWorld;
 UCLASS(
 	Config = Game,
 	DefaultConfig,
-	meta = (DisplayName = "Game Flow"))
+	meta = (DisplayName = "PF Game Flow"))
 class PROJECT_SIH_API UPFGameFlowSettings
 	: public UDeveloperSettings
 {
@@ -25,6 +26,11 @@ public:
 	const TSoftObjectPtr<UWorld>& GetBattleMap() const
 	{
 		return m_BattleMap;
+	}
+
+	const TArray<FGameplayTag>& GetInitialCharacterIDs() const
+	{
+		return m_InitialCharacterIDs;
 	}
 
 private:
@@ -45,4 +51,14 @@ private:
 			AllowPrivateAccess = "true",
 			DisplayName = "Battle Map"))
 	TSoftObjectPtr<UWorld> m_BattleMap;
+
+	UPROPERTY(
+		Config,
+		EditAnywhere,
+		Category = "New Game",
+		meta = (
+			AllowPrivateAccess = "true",
+			Categories = "ID.Character",
+			DisplayName = "Initial Characters"))
+	TArray<FGameplayTag> m_InitialCharacterIDs;
 };

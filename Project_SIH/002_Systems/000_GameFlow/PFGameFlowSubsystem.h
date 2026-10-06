@@ -37,6 +37,11 @@ public:
 		const FGameplayTag& CaseID,
 		const FPFPartyData& Party);
 private:
+	// MVP용 시작 캐릭터 주입.
+	// SaveLoad와 캐릭터 소유 흐름이 생기면 이 설정 기반 초기화 경로를 교체한다.
+	bool TryInitializeCharacterStates(
+		const TArray<FGameplayTag>& InitialCharacterIDs);
+
 	void ResetActiveCase();
 	void UnregisterAllMessages();
 
@@ -51,6 +56,7 @@ private:
 	bool RegisterBattleReadyMessage();
 private:
 	friend struct FPFGameFlowSubsystemAutomationTestAccessor;
+	friend struct FPFBattleRuntimeGameFlowTestAccessor;
 
 	FPFActiveCaseState m_ActiveCaseState;
 	

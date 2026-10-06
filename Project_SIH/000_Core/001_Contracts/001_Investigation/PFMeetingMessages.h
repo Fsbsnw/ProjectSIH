@@ -10,7 +10,7 @@ struct PROJECT_SIH_API FPFMeetingResult
 	GENERATED_BODY()
 
 	FGameplayTag m_CaseID;
-	FGameplayTagContainer m_RevealedWeaknessIDs;
+	TArray<FGameplayTag> m_RevealedWeaknessIDs;
 
 	bool IsValid() const
 	{

@@ -167,7 +167,7 @@ EPFMeetingSubmitResult UPFMeetingSystem::TrySubmitClue(const FGameplayTag& ClueI
 			SIHGameplayTags::ID_Claim)
 		|| !PFGameplayTagUtilities::IsValidChildTag(
 			ClueDefinition->GetRevealedWeaknessID(),
-			SIHGameplayTags::ID_Weakness))
+			SIHGameplayTags::ID_Element))
 	{
 		PF_LOG(TEXT("Clue Meeting definition is invalid. ClueID=%s"), *ClueID.ToString());
 		return EPFMeetingSubmitResult::NotReady;
@@ -176,7 +176,7 @@ EPFMeetingSubmitResult UPFMeetingSystem::TrySubmitClue(const FGameplayTag& ClueI
 	const bool bIsCorrect =	m_SelectedClaimID == ClueDefinition->GetClaimID();
 	if (bIsCorrect)
 	{
-		m_RevealedWeaknessIDs.AddTag(
+		m_RevealedWeaknessIDs.Add(
 			ClueDefinition->GetRevealedWeaknessID());
 	}
 
@@ -188,6 +188,18 @@ EPFMeetingSubmitResult UPFMeetingSystem::TrySubmitClue(const FGameplayTag& ClueI
 	return bIsCorrect
 		? EPFMeetingSubmitResult::Correct
 		: EPFMeetingSubmitResult::Incorrect;
+}
+
+bool UPFMeetingSystem::TryCancelSelection()
+{
+	if (!m_CaseID.IsValid())
+	{
+		return false;
+	}
+
+	m_SelectedClaimID = FGameplayTag();
+	m_InputStep = EPFMeetingInputStep::SelectingClaim;
+	return true;
 }
 
 bool UPFMeetingSystem::TryCompleteMeeting(const FGameplayTag& CaseID)

@@ -23,5 +23,6 @@ public:
 	virtual bool TryGetAcquiredClueIDs(FGameplayTagContainer& OutClueIDs) const = 0;
 	virtual EPFMeetingClaimSelectResult TrySelectClaim(const FGameplayTag& ClaimID) = 0;
 	virtual EPFMeetingSubmitResult TrySubmitClue(const FGameplayTag& ClueID) = 0;
+	virtual bool TryCancelSelection() = 0;
 	virtual bool TryCompleteMeeting(const FGameplayTag& CaseID) = 0;
 };

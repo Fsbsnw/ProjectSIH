@@ -1,5 +1,7 @@
 #include "PFGameFlowSubsystem.h"
 
+#include "Engine/GameInstance.h"
+#include "Engine/LocalPlayer.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameFramework/GameModeBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -16,6 +18,7 @@
 #include "Project_SIH/002_Systems/001_Investigation/Interfaces/PFMeetingEntryReceiver.h"
 #include "Project_SIH/002_Systems/003_Combat/Interfaces/PFBattleEntryReceiver.h"
 #include "Project_SIH/002_Systems/004_CharacterState/PFCharacterStateSubsystem.h"
+#include "Project_SIH/003_UI/002_Subsystem/PFUIManagerSubsystem.h"
 
 void UPFGameFlowSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -282,6 +285,63 @@ bool UPFGameFlowSubsystem::TryConfirmParty(
 	return true;
 }
 
+bool UPFGameFlowSubsystem::TryInitializeCharacterStates(
+	const TArray<FGameplayTag>& InitialCharacterIDs)
+{
+	UPFCharacterStateSubsystem* CharacterStates =
+		GetGameInstance()->GetSubsystem<UPFCharacterStateSubsystem>();
+
+	if (!CharacterStates)
+	{
+		PF_LOG(TEXT("CharacterStateSubsystem is not valid"));
+		return false;
+	}
+
+	// 이미 생성되거나 복원된 캐릭터 상태는 유지한다.
+	if (!CharacterStates->GetCharacterIDs().IsEmpty())
+	{
+		return true;
+	}
+
+	if (InitialCharacterIDs.IsEmpty())
+	{
+		PF_LOG(TEXT("Initial characters are not configured"));
+		return false;
+	}
+
+	TSet<FGameplayTag> UniqueIDs;
+
+	// 모두 확인한 다음 생성하여 잘못된 설정으로 일부만 생성되는 일을 피한다.
+	for (const FGameplayTag& CharacterID : InitialCharacterIDs)
+	{
+		if (!CharacterID.IsValid()
+			|| UniqueIDs.Contains(CharacterID)
+			|| !UPFAssetManager::Get()
+					.GetCharacterDefinition(CharacterID))
+		{
+			PF_LOG(
+				TEXT("Invalid initial character. CharacterID=%s"),
+				*CharacterID.ToString());
+			return false;
+		}
+
+		UniqueIDs.Add(CharacterID);
+	}
+
+	for (const FGameplayTag& CharacterID : InitialCharacterIDs)
+	{
+		// 기본 State: Level 1, 장비 없음.
+		if (!CharacterStates->TryCreateCharacterState(
+				CharacterID,
+				FPFCharacterStateData{}))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 EPFPhaseStartResult UPFGameFlowSubsystem::StartCase(
 	const FGameplayTag& CaseID)
 {
@@ -320,6 +380,12 @@ EPFPhaseStartResult UPFGameFlowSubsystem::StartCase(
 	{
 		PF_LOG(
 			TEXT("Investigation Map is not configured"));
+		return EPFPhaseStartResult::NotReady;
+	}
+
+	if (!TryInitializeCharacterStates(
+			Settings->GetInitialCharacterIDs()))
+	{
 		return EPFPhaseStartResult::NotReady;
 	}
 
@@ -405,7 +471,6 @@ void UPFGameFlowSubsystem::HandleInvestigationReady(
 		ResetActiveCase();
 		return;
 	}
-
 }
 
 void UPFGameFlowSubsystem::HandleInvestigationFinished(FGameplayTag Channel,
@@ -537,6 +602,21 @@ void UPFGameFlowSubsystem::TransitionToPartyFormation(
 {
 	m_ActiveCaseState.m_MeetingResult = MeetingResult;
 	m_ActiveCaseState.m_CasePhase = EPFCasePhase::PartyFormation;
+
+	UGameInstance* GameInstance = GetGameInstance();
+	ULocalPlayer* LocalPlayer = IsValid(GameInstance)
+		? GameInstance->GetFirstGamePlayer()
+		: nullptr;
+	UPFUIManagerSubsystem* UIManager = IsValid(LocalPlayer)
+		? LocalPlayer->GetSubsystem<UPFUIManagerSubsystem>()
+		: nullptr;
+
+	if (!IsValid(UIManager)
+		|| !UIManager->ShowWidget(
+			SIHGameplayTags::UI_Screen_PartyFormation.GetTag()))
+	{
+		PF_LOG(TEXT("PartyFormation screen could not be shown"));
+	}
 }
 
 void UPFGameFlowSubsystem::HandleBattleReady(
@@ -589,8 +669,7 @@ void UPFGameFlowSubsystem::HandleBattleReady(
 	FPFBattleEntryContext Context;
 	Context.m_CaseID = m_ActiveCaseState.m_CaseID;
 	Context.m_Party = m_ActiveCaseState.m_CurrentParty;
-	Context.m_RevealedWeaknessIDs =
-		m_ActiveCaseState.m_MeetingResult.m_RevealedWeaknessIDs;
+	Context.m_RevealedWeaknessIDs = m_ActiveCaseState.m_MeetingResult.m_RevealedWeaknessIDs;
 
 	const EPFPhaseStartResult StartResult =
 		BattleEntryReceiver->StartBattle(Context);

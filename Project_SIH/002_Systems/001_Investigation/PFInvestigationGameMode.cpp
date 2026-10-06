@@ -6,6 +6,7 @@
 #include "Project_SIH/000_Core/001_Diagnostics/PFDebugMacros.h"
 #include "Project_SIH/002_Systems/001_Investigation/PFInvestigationSystem.h"
 #include "Project_SIH/002_Systems/001_Investigation/PFMeetingSystem.h"
+#include "Project_SIH/002_Systems/011_Dialogue/PFDialogueGraphExecutor.h"
 #include "Project_SIH/002_Systems/007_Player/PFPlayerController.h"
 
 APFInvestigationGameMode::APFInvestigationGameMode()
@@ -115,10 +116,127 @@ EPFMeetingSubmitResult APFInvestigationGameMode::TrySubmitClue(const FGameplayTa
 	return m_MeetingSystem->TrySubmitClue(ClueID);
 }
 
+bool APFInvestigationGameMode::TryCancelSelection()
+{
+	return IsValid(m_MeetingSystem)
+		&& m_MeetingSystem->TryCancelSelection();
+}
+
 bool APFInvestigationGameMode::TryCompleteMeeting(const FGameplayTag& CaseID)
 {
 	return IsValid(m_MeetingSystem)
 		&& m_MeetingSystem->TryCompleteMeeting(CaseID);
+}
+
+bool APFInvestigationGameMode::SubmitDialogueClaimSelection(
+	UPFDialogueGraphExecutor* Executor,
+	FGuid RequestID,
+	FGameplayTag ClaimID)
+{
+	if (!IsValid(Executor))
+	{
+		return false;
+	}
+
+	const FPFDialogueExternalSelectionRequest Request =
+		Executor->GetPendingExternalRequest();
+	if (Executor->GetExecutionState()
+			!= EPFDialogueExecutionState::WaitingForExternalResponse
+		|| Request.RequestID != RequestID
+		|| Request.RequestType != EPFDialogueExternalRequestType::Claim
+		|| !Request.CandidateContentIDs.Contains(ClaimID))
+	{
+		return false;
+	}
+
+	FPFDialogueExternalSelectionResponse Response;
+	Response.RequestID = RequestID;
+	Response.SelectedContentID = ClaimID;
+	const bool bClaimSelected = TrySelectClaim(ClaimID)
+		== EPFMeetingClaimSelectResult::Selected;
+	Response.ResponseType = bClaimSelected
+			? EPFDialogueExternalResponseType::Selected
+			: EPFDialogueExternalResponseType::Failed;
+	if (!bClaimSelected)
+	{
+		TryCancelSelection();
+	}
+	const bool bDialogueResumed = Executor->SubmitExternalResponse(Response);
+	if (!bDialogueResumed && bClaimSelected)
+	{
+		TryCancelSelection();
+	}
+	return bDialogueResumed;
+}
+
+bool APFInvestigationGameMode::SubmitDialogueEvidenceSelection(
+	UPFDialogueGraphExecutor* Executor,
+	FGuid RequestID,
+	FGameplayTag ClueID)
+{
+	if (!IsValid(Executor))
+	{
+		return false;
+	}
+
+	const FPFDialogueExternalSelectionRequest Request =
+		Executor->GetPendingExternalRequest();
+	if (Executor->GetExecutionState()
+			!= EPFDialogueExecutionState::WaitingForExternalResponse
+		|| Request.RequestID != RequestID
+		|| Request.RequestType != EPFDialogueExternalRequestType::Evidence)
+	{
+		return false;
+	}
+
+	const EPFMeetingSubmitResult SubmitResult = TrySubmitClue(ClueID);
+	FPFDialogueExternalSelectionResponse Response;
+	Response.RequestID = RequestID;
+	Response.SelectedContentID = ClueID;
+	if (SubmitResult == EPFMeetingSubmitResult::Correct)
+	{
+		Response.ResponseType = EPFDialogueExternalResponseType::Correct;
+	}
+	else if (SubmitResult == EPFMeetingSubmitResult::Incorrect)
+	{
+		Response.ResponseType = EPFDialogueExternalResponseType::Incorrect;
+	}
+	else
+	{
+		TryCancelSelection();
+		Response.ResponseType = EPFDialogueExternalResponseType::Failed;
+	}
+
+	return Executor->SubmitExternalResponse(Response);
+}
+
+bool APFInvestigationGameMode::CancelDialogueExternalSelection(
+	UPFDialogueGraphExecutor* Executor,
+	FGuid RequestID)
+{
+	if (!IsValid(Executor))
+	{
+		return false;
+	}
+
+	const FPFDialogueExternalSelectionRequest Request =
+		Executor->GetPendingExternalRequest();
+	if (Executor->GetExecutionState()
+			!= EPFDialogueExecutionState::WaitingForExternalResponse
+		|| Request.RequestID != RequestID)
+	{
+		return false;
+	}
+
+	if (Request.RequestType == EPFDialogueExternalRequestType::Evidence)
+	{
+		TryCancelSelection();
+	}
+
+	FPFDialogueExternalSelectionResponse Response;
+	Response.RequestID = RequestID;
+	Response.ResponseType = EPFDialogueExternalResponseType::Cancelled;
+	return Executor->SubmitExternalResponse(Response);
 }
 
 void APFInvestigationGameMode::InitGame(
