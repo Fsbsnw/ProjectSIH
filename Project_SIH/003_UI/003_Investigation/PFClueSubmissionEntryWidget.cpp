@@ -3,15 +3,15 @@
 #include "CommonButtonBase.h"
 #include "CommonTextBlock.h"
 
-void UPFClueSubmissionEntryWidget::SetClueID(const FGameplayTag& ClueID)
+void UPFClueSubmissionEntryWidget::SetEntryID(const FGameplayTag& EntryID)
 {
-	m_ClueID = ClueID;
-	Text_Clue->SetText(FText::FromString(ClueID.ToString()));
+	m_EntryID = EntryID;
+	Text_Clue->SetText(FText::FromString(EntryID.ToString()));
 }
 
-UPFClueSubmissionEntryWidget::FClueSelectedEvent& UPFClueSubmissionEntryWidget::OnClueClicked()
+UPFClueSubmissionEntryWidget::FEntrySelectedEvent& UPFClueSubmissionEntryWidget::OnEntryClicked()
 {
-	return m_OnClueSelected;
+	return m_OnEntrySelected;
 }
 
 void UPFClueSubmissionEntryWidget::NativeOnInitialized()
@@ -22,5 +22,5 @@ void UPFClueSubmissionEntryWidget::NativeOnInitialized()
 
 void UPFClueSubmissionEntryWidget::HandleSubmissionButtonClicked()
 {
-	m_OnClueSelected.Broadcast(m_ClueID);
+	m_OnEntrySelected.Broadcast(m_EntryID);
 }

@@ -9,6 +9,7 @@
 
 class UPFCaseDefinition;
 class UPFClueDefinition;
+class UPFDialogueDefinition;
 /**
  *
  */
@@ -28,6 +29,7 @@ public:
 	const UPFClueDefinition* GetClueDefinition(const FGameplayTag& ClueID);
 	const UPFClueDefinition* GetClueCombinationDefinition(
 		const FGameplayTagContainer& SourceClueIDs);
+	UPFDialogueDefinition* GetDialogueDefinition(const FGameplayTag& DialogueID);
 	const UPFItemDefinition* GetItemDefinition(const FGameplayTag& ItemDefinitionID);
 
 private:

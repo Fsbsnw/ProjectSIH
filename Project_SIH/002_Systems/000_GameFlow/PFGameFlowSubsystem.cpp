@@ -509,16 +509,6 @@ void UPFGameFlowSubsystem::HandleInvestigationFinished(FGameplayTag Channel,
 		return;
 	}
 
-	if (Channel == SIHGameplayTags::Message_Flow_Investigation_Skipped.GetTag())
-	{
-		m_ActiveCaseState.m_InvestigationResult = Message;
-
-		FPFMeetingResult EmptyMeetingResult{};
-		EmptyMeetingResult.m_CaseID = Message.m_CaseID;
-		TransitionToPartyFormation(EmptyMeetingResult);
-		return;
-	}
-
 	UWorld* World = GetWorld();
 	if (!World)
 	{
@@ -548,15 +538,42 @@ void UPFGameFlowSubsystem::HandleInvestigationFinished(FGameplayTag Channel,
 	MeetingEntryContext.m_AcquiredClueIDs =
 		m_ActiveCaseState.m_InvestigationResult.m_AcquiredClueIDs;
 
-	m_ActiveCaseState.m_CasePhase = EPFCasePhase::Meeting;
-
 	const EPFPhaseStartResult StartResult = MeetingEntryReceiver->StartMeeting(MeetingEntryContext);
 	if (StartResult != EPFPhaseStartResult::Started)
 	{
 		PF_LOG(
 			TEXT("Meeting start rejected. Result=%d"),
 			static_cast<uint8>(StartResult));
+		return;
 	}
+
+	m_ActiveCaseState.m_CasePhase = EPFCasePhase::Meeting;
+
+	if (!TryShowMeetingDialogueWidget())
+	{
+		PF_LOG(TEXT("Meeting started, but its Dialogue UI could not be shown"));
+	}
+}
+
+bool UPFGameFlowSubsystem::TryShowMeetingDialogueWidget()
+{
+	UGameInstance* GameInstance = GetGameInstance();
+	ULocalPlayer* LocalPlayer = IsValid(GameInstance)
+		? GameInstance->GetFirstGamePlayer()
+		: nullptr;
+	UPFUIManagerSubsystem* UIManager = IsValid(LocalPlayer)
+		? LocalPlayer->GetSubsystem<UPFUIManagerSubsystem>()
+		: nullptr;
+
+	if (!IsValid(UIManager)
+		|| !UIManager->ShowWidget(
+			SIHGameplayTags::UI_Screen_Dialogue.GetTag()))
+	{
+		PF_LOG(TEXT("Dialogue screen could not be shown"));
+		return false;
+	}
+
+	return true;
 }
 
 void UPFGameFlowSubsystem::HandleMeetingCompleted(FGameplayTag Channel,

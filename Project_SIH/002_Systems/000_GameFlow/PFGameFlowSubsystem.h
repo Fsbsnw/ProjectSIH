@@ -29,8 +29,8 @@ public:
 	bool TryCloseCase(const FGameplayTag& CaseID);
 
 	/**
-	 * Investigation 또는 Meeting을 종료하고 PartyFormation으로 전환합니다.
-	 * Investigation에서는 Meeting을 생략하고, Meeting에서는 정상 완료 흐름을 사용합니다.
+	 * 현재 Phase의 종료를 요청합니다.
+	 * Investigation에서는 Meeting으로, Meeting에서는 PartyFormation으로 진행합니다.
 	 */
 	bool TryEnterPartyFormation(const FGameplayTag& CaseID);
 	bool TryConfirmParty(
@@ -51,6 +51,7 @@ private:
 	void HandleBattleReady(FGameplayTag Channel, const FPFBattleReadyMessage& Message);
 	void HandleBattleCompleted(FGameplayTag Channel, const FPFBattleResult& Message);
 	void TransitionToPartyFormation(const FPFMeetingResult& MeetingResult);
+	bool TryShowMeetingDialogueWidget();
 
 	bool RegisterInvestigationReadyMessage();
 	bool RegisterBattleReadyMessage();

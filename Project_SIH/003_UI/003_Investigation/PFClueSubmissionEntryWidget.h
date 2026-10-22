@@ -8,27 +8,27 @@
 class UCommonButtonBase;
 class UCommonTextBlock;
 
-/** 단서 제출 목록의 단서 ID, 표시 문구와 공용 버튼 클릭을 연결하는 항목 위젯입니다. */
+/** 회의 제출 화면의 주장 또는 단서 ID와 공용 버튼 클릭을 연결하는 항목 위젯입니다. */
 UCLASS(Abstract, Blueprintable)
 class PROJECT_SIH_API UPFClueSubmissionEntryWidget : public UCommonUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	DECLARE_MULTICAST_DELEGATE_OneParam(FClueSelectedEvent, const FGameplayTag&);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FEntrySelectedEvent, const FGameplayTag&);
 
-	/** 이 항목이 표시하고 제출할 단서 ID를 설정합니다. */
-	void SetClueID(const FGameplayTag& ClueID);
+	/** 이 항목이 표시하고 전달할 주장 또는 단서 ID를 설정합니다. */
+	void SetEntryID(const FGameplayTag& EntryID);
 
-	/** 항목의 공용 버튼이 클릭됐을 때 단서 ID를 전달합니다. */
-	FClueSelectedEvent& OnClueClicked();
+	/** 항목의 공용 버튼이 클릭됐을 때 현재 ID를 전달합니다. */
+	FEntrySelectedEvent& OnEntryClicked();
 
 protected:
 	/** 공용 버튼 클릭을 Entry의 단서 선택 Event에 연결합니다. */
 	virtual void NativeOnInitialized() override;
 
 private:
-	/** 현재 단서 ID를 부모 단서 제출 Screen에 전달합니다. */
+	/** 현재 ID를 부모 제출 Screen에 전달합니다. */
 	void HandleSubmissionButtonClicked();
 
 	/** 프로젝트 공용 스타일 버튼 WBP를 배치하는 선택 버튼입니다. */
@@ -39,6 +39,6 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonTextBlock> Text_Clue;
 
-	FGameplayTag m_ClueID;
-	FClueSelectedEvent m_OnClueSelected;
+	FGameplayTag m_EntryID;
+	FEntrySelectedEvent m_OnEntrySelected;
 };

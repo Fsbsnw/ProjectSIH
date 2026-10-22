@@ -3,10 +3,12 @@
 #include "CoreMinimal.h"
 #include "Project_SIH/000_Core/001_Contracts/000_Flow/PFGameFlowTypes.h"
 #include "Project_SIH/000_Core/001_Contracts/001_Investigation/PFMeetingTypes.h"
+#include "Project_SIH/000_Core/001_Contracts/006_Dialogue/PFDialogueTypes.h"
 #include "UObject/Object.h"
 #include "PFMeetingSystem.generated.h"
 
 struct FPFMeetingResult;
+class UPFDialogueSubsystem;
 
 UCLASS()
 class PROJECT_SIH_API UPFMeetingSystem : public UObject
@@ -20,7 +22,6 @@ public:
 	bool TryGetAcquiredClueIDs(FGameplayTagContainer& OutClueIDs) const;
 	EPFMeetingClaimSelectResult TrySelectClaim(const FGameplayTag& ClaimID);
 	EPFMeetingSubmitResult TrySubmitClue(const FGameplayTag& ClueID);
-	bool TryCancelSelection();
 	bool TryCompleteMeeting(const FGameplayTag& CaseID);
 
 private:
@@ -31,12 +32,29 @@ private:
 		SelectingClue,
 	};
 
+	bool TryStartMeetingDialogue();
+	void BindDialogueEvents();
+	void UnbindDialogueEvents();
+	bool TryShowClueSubmissionWidget() const;
+	void CompletePendingDialogueAction(EPFMeetingSubmitResult SubmitResult);
+	void CompleteMeeting();
+
+	UFUNCTION()
+	void HandleDialogueActionRequested(const FPFDialogueActionPresentation& Presentation);
+
+	UFUNCTION()
+	void HandleDialogueCompleted();
+
 	void ResetState();
 	void SendMeetingCompletedMessage(const FPFMeetingResult& Result);
+
+	UPROPERTY(Transient)
+	TObjectPtr<UPFDialogueSubsystem> m_DialogueSubsystem;
 
 	FGameplayTag m_CaseID;
 	FGameplayTagContainer m_AcquiredClueIDs;
 	TArray<FGameplayTag> m_RevealedWeaknessIDs;
 	FGameplayTag m_SelectedClaimID;
+	FName m_PendingDialogueActionNodeID;
 	EPFMeetingInputStep m_InputStep = EPFMeetingInputStep::Inactive;
 };

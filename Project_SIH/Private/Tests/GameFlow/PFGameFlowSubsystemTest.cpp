@@ -329,42 +329,11 @@ bool FPFGameFlowPhaseResultTest::RunTest(
 			SIHGameplayTags::Message_Flow_Investigation_Skipped.GetTag(),
 			InvestigationResult);
 
-	const FPFActiveCaseState& InvestigationSkippedState =
-		GameFlowSubsystem->GetActiveCaseState();
-
 	TestTrue(
-		TEXT("Investigation Skip 결과는 PartyFormation으로 전환해야 합니다."),
-		InvestigationSkippedState.MatchesCaseAndPhase(
-			CaseID,
-			EPFCasePhase::PartyFormation));
-	TestTrue(
-		TEXT("Investigation Skip 결과는 획득한 단서를 저장해야 합니다."),
-		InvestigationSkippedState.m_InvestigationResult
-			.m_AcquiredClueIDs.HasTagExact(
-				SIHGameplayTags::ID_Clue_FlowTest.GetTag()));
-	TestEqual(
-		TEXT("Investigation Skip의 빈 Meeting 결과도 현재 CaseID를 유지해야 합니다."),
-		InvestigationSkippedState.m_MeetingResult.m_CaseID,
-		CaseID);
-	TestTrue(
-		TEXT("Investigation Skip의 Meeting 간파 결과는 비어 있어야 합니다."),
-		InvestigationSkippedState.m_MeetingResult
-			.m_RevealedWeaknessIDs.IsEmpty());
-
-	const FPFActiveCaseState StoredInvestigationSkippedState =
-		InvestigationSkippedState;
-
-	FPFGameFlowSubsystemAutomationTestAccessor::
-		DispatchInvestigationFinished(
-			*GameFlowSubsystem,
-			SIHGameplayTags::Message_Flow_Investigation_Skipped.GetTag(),
-			InvestigationResult);
-
-	TestTrue(
-		TEXT("PartyFormation 이후 늦은 Investigation Skip 결과는 상태를 변경하지 않아야 합니다."),
+		TEXT("World가 없는 단위 테스트에서는 Meeting 진입을 시작하지 않아야 합니다."),
 		AreActiveCaseStatesEqual(
 			GameFlowSubsystem->GetActiveCaseState(),
-			StoredInvestigationSkippedState));
+			InvestigationState));
 
 	FPFMeetingResult MeetingResult;
 	MeetingResult.m_CaseID = CaseID;

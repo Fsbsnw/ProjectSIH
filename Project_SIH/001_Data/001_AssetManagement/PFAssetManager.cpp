@@ -8,6 +8,7 @@
 #include "Project_SIH/001_Data/000_Definitions/PFCaseDefinition.h"
 #include "Project_SIH/001_Data/000_Definitions/PFCharacterDefinition.h"
 #include "Project_SIH/001_Data/000_Definitions/PFClueDefinition.h"
+#include "Project_SIH/001_Data/000_Definitions/PFDialogueDefinition.h"
 #include "Project_SIH/001_Data/000_Definitions/PFItemDefinition.h"
 #include "Project_SIH/SIHGameplayTags.h"
 
@@ -278,6 +279,46 @@ const UPFClueDefinition* UPFAssetManager::GetClueCombinationDefinition(
 	}
 
 	return MatchingDefinition;
+}
+
+UPFDialogueDefinition* UPFAssetManager::GetDialogueDefinition(
+	const FGameplayTag& DialogueID)
+{
+	const FPrimaryAssetId AssetID =
+		UPFDialogueDefinition::MakePrimaryAssetID(DialogueID);
+
+	if (!AssetID.IsValid())
+	{
+		PF_LOG(
+			TEXT("Invalid DialogueID: %s"),
+			*DialogueID.ToString());
+		return nullptr;
+	}
+
+	UObject* LoadedObject =
+		GetOrLoadPrimaryAssetObjectSync(AssetID);
+
+	if (!LoadedObject)
+	{
+		return nullptr;
+	}
+
+	UPFDialogueDefinition* DialogueDefinition =
+		Cast<UPFDialogueDefinition>(LoadedObject);
+
+	if (!DialogueDefinition)
+	{
+		PF_LOG(
+			TEXT(
+				"Loaded Primary Asset has unexpected class. "
+				"AssetID=%s, ExpectedClass=%s, ActualClass=%s"),
+			*AssetID.ToString(),
+			*UPFDialogueDefinition::StaticClass()->GetName(),
+			*LoadedObject->GetClass()->GetName());
+		return nullptr;
+	}
+
+	return DialogueDefinition;
 }
 
 const UPFItemDefinition* UPFAssetManager::GetItemDefinition(

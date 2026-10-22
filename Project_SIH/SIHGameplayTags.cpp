@@ -20,6 +20,12 @@ namespace SIHGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(ID_Case_FlowTest, "ID.Case.FlowTest");
 	UE_DEFINE_GAMEPLAY_TAG(ID_Clue, "ID.Clue");
 	UE_DEFINE_GAMEPLAY_TAG(ID_Clue_FlowTest, "ID.Clue.FlowTest");
+	UE_DEFINE_GAMEPLAY_TAG(
+		ID_Clue_DialogueTest_A,
+		"ID.Clue.DialogueTest.A");
+	UE_DEFINE_GAMEPLAY_TAG(
+		ID_Clue_DialogueTest_B,
+		"ID.Clue.DialogueTest.B");
 #if WITH_DEV_AUTOMATION_TESTS
 	UE_DEFINE_GAMEPLAY_TAG(
 		ID_Clue_CombinationTest_SourceA,
@@ -42,6 +48,12 @@ namespace SIHGameplayTags
 #endif
 	UE_DEFINE_GAMEPLAY_TAG(ID_Claim, "ID.Claim");
 	UE_DEFINE_GAMEPLAY_TAG(ID_Claim_FlowTest, "ID.Claim.FlowTest");
+	UE_DEFINE_GAMEPLAY_TAG(
+		ID_Claim_DialogueTest_A,
+		"ID.Claim.DialogueTest.A");
+	UE_DEFINE_GAMEPLAY_TAG(
+		ID_Claim_DialogueTest_B,
+		"ID.Claim.DialogueTest.B");
 #if WITH_DEV_AUTOMATION_TESTS
 	UE_DEFINE_GAMEPLAY_TAG(
 		ID_Claim_MeetingTest_A,
@@ -53,6 +65,11 @@ namespace SIHGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(ID_Element_Maintenance, "ID.Element.Maintenance");
 	UE_DEFINE_GAMEPLAY_TAG(ID_Element_Security, "ID.Element.Security");
 	UE_DEFINE_GAMEPLAY_TAG(ID_Element_Guidance, "ID.Element.Guidance");
+	UE_DEFINE_GAMEPLAY_TAG(ID_Dialogue, "ID.Dialogue");
+	UE_DEFINE_GAMEPLAY_TAG(ID_Dialogue_Meeting_01, "ID.Dialogue.Meeting.01");
+	UE_DEFINE_GAMEPLAY_TAG(ID_Dialogue_Meeting_02, "ID.Dialogue.Meeting.02");
+	UE_DEFINE_GAMEPLAY_TAG(ID_Dialogue_Test_01, "ID.Dialogue.Test.01");
+	UE_DEFINE_GAMEPLAY_TAG(ID_Dialogue_Test_02, "ID.Dialogue.Test.02");
 
 	#pragma endregion
 
@@ -101,6 +118,7 @@ namespace SIHGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(UI_Screen_ClueSubmission, "UI.Screen.ClueSubmission");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Screen_PartyFormation, "UI.Screen.PartyFormation");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Screen_BattleResult, "UI.Screen.BattleResult");
+	UE_DEFINE_GAMEPLAY_TAG(UI_Screen_Dialogue, "UI.Screen.Dialogue");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Screen_Test, "UI.Screen.Test");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Modal, "UI.Modal");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Modal_DebugFlow, "UI.Modal.DebugFlow");
@@ -176,6 +194,16 @@ namespace SIHGameplayTags
 	#pragma region Battle Tags
 
 	UE_DEFINE_GAMEPLAY_TAG(Action, "Action");
+	UE_DEFINE_GAMEPLAY_TAG(Action_Dialogue, "Action.Dialogue");
+	UE_DEFINE_GAMEPLAY_TAG(
+		Action_Dialogue_Test,
+		"Action.Dialogue.Test");
+	UE_DEFINE_GAMEPLAY_TAG(
+		Action_Dialogue_AcquireClue,
+		"Action.Dialogue.AcquireClue");
+	UE_DEFINE_GAMEPLAY_TAG(
+		Action_Dialogue_Submit,
+		"Action.Dialogue.Submit");
 	UE_DEFINE_GAMEPLAY_TAG(Action_Ability, "Action.Ability");
 	UE_DEFINE_GAMEPLAY_TAG(
 		Action_Ability_BasicAttack,

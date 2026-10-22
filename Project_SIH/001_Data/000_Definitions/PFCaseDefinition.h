@@ -49,6 +49,7 @@ UCLASS()
 class PROJECT_SIH_API UPFCaseDefinition : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
+	friend struct FPFCaseDefinitionAutomationTestAccessor;
 
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
@@ -65,6 +66,11 @@ public:
 		return m_BossEncounter;
 	}
 
+	const FGameplayTag& GetMeetingDialogueID() const
+	{
+		return m_MeetingDialogueID;
+	}
+
 private:
 	UPROPERTY(EditDefaultsOnly,
 		BlueprintReadOnly,
@@ -74,6 +80,17 @@ private:
 			Categories = "ID.Case",
 			ToolTip = "Case를 식별하는 고유 GameplayTag입니다. ID.Case.*의 형태입니다"))
 	FGameplayTag m_CaseID;
+
+	/** Meeting 진입 시 실행할 Dialogue Definition의 ID입니다. */
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category = "Definition|Meeting",
+		meta = (
+			AllowPrivateAccess = "true",
+			DisplayName = "Meeting Dialogue ID",
+			Categories = "ID.Dialogue"))
+	FGameplayTag m_MeetingDialogueID;
 
 	UPROPERTY(
 		EditDefaultsOnly,
