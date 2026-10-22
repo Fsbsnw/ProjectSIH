@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Project_SIH 대화 시스템 시뮬레이터</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1421;--panel:#142438;--panel2:#1b3049;--panel3:#213b56;--border:#49647f;--ink:#f7faff;--muted:#c0d1e4;--blue:#91d1ff;--gold:#ffd794;--green:#b0f7d9;--red:#ffbcbc}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,'Noto Sans KR','Malgun Gothic',sans-serif;line-height:1.55}
+body{color-scheme:dark}
+button,input,select,textarea{font:inherit;color:var(--ink)!important;-webkit-text-fill-color:var(--ink)!important;color-scheme:dark}
+button{cursor:pointer;touch-action:manipulation;font-weight:700;background:#294766!important;border:1px solid #718ba5!important;border-radius:9px;padding:10px 12px;text-align:center;min-height:39px}
+button:hover{border-color:#b8e3ff!important;background:#345a80!important}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #b6e7ff;outline-offset:2px}
+button:disabled{opacity:.48;cursor:not-allowed}
+input,select,textarea{width:100%;min-width:0;background:#132a42!important;border:1px solid #6988a8!important;border-radius:9px;padding:10px 11px;min-height:42px;outline:none;display:block}
+select option{color:#fff!important;background:#182e47!important;-webkit-text-fill-color:#fff!important}
+input::placeholder,textarea::placeholder{color:#c7d5e5!important;-webkit-text-fill-color:#c7d5e5!important}
+textarea{resize:vertical;min-height:65px}
+input:disabled,select:disabled{opacity:.6}
+header{background:linear-gradient(130deg,#1b4669,#1a2a46 68%,#302d4a);border-bottom:1px solid #54718b}
+.wrap{max-width:1170px;margin:0 auto}
+.header-inner{padding:21px 18px 15px}
+.eyebrow{color:#bde2ff!important;font-size:11px;font-weight:900;letter-spacing:.12em}
+h1{font-size:clamp(19px,3.2vw,27px);margin:4px 0 7px;color:#fff!important}
+h2{font-size:17px;margin:0 0 11px;color:#fff!important}
+h3{font-size:14px;margin:0 0 10px;color:#fff!important}
+p{margin:7px 0}
+.sub{color:#cfdeed!important;font-size:12px}
+.row{display:flex;align-items:center;gap:9px}.between{justify-content:space-between}.wrap-row{flex-wrap:wrap}.grow{flex:1;min-width:0}
+.modes{display:flex;gap:8px;margin:15px 0 0;flex-wrap:wrap}.modes button{flex:1;min-width:140px}
+button.selected,button.on{background:#345e84!important;border-color:#a9dbff!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+nav{background:#112134;border-bottom:1px solid var(--border);padding:8px 10px}
+.nav-buttons{max-width:1170px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.nav-buttons button{font-size:12px;padding:10px 3px;background:transparent!important;border-color:transparent!important}
+.nav-buttons button.on{background:#315474!important;border-color:#6c90af!important}
+main{padding:18px 15px 25px;min-height:520px}
+.hint{background:#20374e;border-left:4px solid #8bceff;border-radius:0 9px 9px 0;color:#e9f3ff!important;font-size:12px;line-height:1.7;padding:11px 13px;margin:0 0 15px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;min-width:0}
+.card.selected-card{border-color:#9ed4ff;box-shadow:0 0 0 1px #476f92}
+.muted{color:var(--muted)!important;-webkit-text-fill-color:var(--muted)!important}.small{font-size:12px}.tiny{font-size:11px}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+.badge{display:inline-block;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:800;white-space:nowrap;color:#fff!important;background:#3c5875}
+.badge.Dialogue{background:#255a86;color:#e3f5ff!important}.badge.Action{background:#75512c;color:#ffe8be!important}.badge.End{background:#24624e;color:#d8ffee!important}
+.sep{height:1px;background:#455d76;margin:14px 0}
+label{font-size:11px;font-weight:800;color:#e0edfb!important;display:block;margin:10px 0 5px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.split{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(290px,1fr);gap:14px;align-items:start}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.btnrow button{flex:1}
+.primary{background:#236da4!important;border-color:#7cbdec!important}.danger{background:#583442!important;border-color:#b77c8f!important}
+.ghost{background:transparent!important;border-color:#627c96!important}
+.entry{border-top:1px solid #435b75;padding:13px 0 0;margin:13px 0 0}.entry:first-child{border-top:0;padding-top:0;margin-top:0}
+.graphnode{display:block;width:100%;text-align:left!important;background:#1b334c!important;border:1px solid #5b7793!important;border-left:5px solid #95d1ff!important;margin-bottom:8px;padding:13px;border-radius:10px}
+.graphnode.Action{border-left-color:#ffd08a!important}.graphnode.End{border-left-color:#9df2cc!important}.graphnode.on{background:#2b506f!important;border-color:#a7ddff!important}
+.graphnode .desc{font-size:11px;line-height:1.65;color:#dfedfc!important;-webkit-text-fill-color:#dfedfc!important;font-weight:400;overflow-wrap:anywhere}
+.branch{background:#182f46;border:1px solid #5b7690;border-radius:10px;padding:12px;margin:9px 0}
+.choice-button{display:block;width:100%;text-align:left!important;background:#2c5374!important;border:1px solid #8bb9df!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:14px!important;min-height:52px;margin:9px 0;font-size:14px!important}
+.choice-button *, .choice-button span{color:#fff!important;-webkit-text-fill-color:#fff!important}
+.choice-button .minor{color:#dceeff!important;-webkit-text-fill-color:#dceeff!important;font-size:11px;display:block;margin-top:5px}
+.dialogue-bubble{font-size:17px;line-height:1.8;padding:16px;color:#fff!important;-webkit-text-fill-color:#fff!important;background:#26445f!important;border:1px solid #82aacd;border-radius:11px;margin:12px 0;min-height:88px;word-break:keep-all}
+.dialogue-bubble *{color:#fff!important;-webkit-text-fill-color:#fff!important}
+.complete-screen{background:#214c40!important;border:1px solid #69b99b!important;border-radius:12px;padding:20px;margin:13px 0;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.complete-screen *{color:#fff!important;-webkit-text-fill-color:#fff!important}
+.complete-screen .tick{font-size:28px;color:#b4ffda!important;-webkit-text-fill-color:#b4ffda!important}
+.complete-screen h2{font-size:20px;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.complete-screen p{color:#e4fff0!important;-webkit-text-fill-color:#e4fff0!important}
+.warntext{color:#ffdba6!important;-webkit-text-fill-color:#ffdba6!important}.goodtext{color:#b3fbdc!important;-webkit-text-fill-color:#b3fbdc!important}
+.stat{background:#102338;border:1px solid #4c6783;padding:11px;border-radius:9px;min-width:0}.stat .value{font-size:12px;font-weight:800;color:#fff!important;overflow-wrap:anywhere;margin-top:5px}
+.log-row{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #3d566e;font-size:12px;overflow-wrap:anywhere;color:#f5faff!important}.log-row:last-child{border-bottom:0}.log-num{background:#344f69;border-radius:6px;min-width:25px;height:24px;display:grid;place-items:center;font-weight:800;font-size:11px;color:#fff!important}
+pre{background:#0d1d2f;color:#d9edff!important;-webkit-text-fill-color:#d9edff!important;border:1px solid #526e8b;border-radius:9px;overflow:auto;max-height:380px;white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;font-size:11px;line-height:1.6}
+.graph-surface{height:365px;overflow:auto;background-color:#102238;background-image:linear-gradient(#ffffff0d 1px,transparent 1px),linear-gradient(90deg,#ffffff0d 1px,transparent 1px);background-size:24px 24px;border:1px solid #536e89;border-radius:11px;margin-bottom:11px;touch-action:pan-x pan-y;overscroll-behavior:contain}
+.graph-inner{position:relative}.graph-inner svg{position:absolute;inset:0;pointer-events:none}
+.map-node{position:absolute;width:165px;padding:10px!important;min-height:72px;background:#234664!important;border:1px solid #84b4d8!important;text-align:left!important;border-radius:9px;z-index:1}
+.map-node.Action{background:#59472e!important;border-color:#e1b879!important}.map-node.End{background:#285a48!important;border-color:#9ce6c5!important}.map-node.on{outline:2px solid #fff!important}
+.map-node strong{font-size:12px;display:block;margin:4px 0;overflow-wrap:anywhere;color:#fff!important}.map-node span{font-size:10px;display:block;color:#e5f1ff!important;-webkit-text-fill-color:#e5f1ff!important}
+footer{border-top:1px solid #405a74;background:#101f30;color:#c8d8e9!important;font-size:11px;padding:15px 18px;line-height:1.7}
+.file-note{padding:9px 0 0;color:#d2dfeb;font-size:11px}
+input[type=file]{font-size:12px;padding:9px;background:#142c43!important}
+@media(max-width:700px){.split{grid-template-columns:minmax(0,1fr)}.graph-surface{height:300px}.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:14px 11px 22px}.card{padding:12px}.header-inner{padding:17px 12px}.modes button{min-width:0}.nav-buttons button{font-size:11px}}
+@media(max-width:360px){.nav-buttons button{font-size:10px}.grid2{grid-template-columns:minmax(0,1fr)}.grid3{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+(()=>{
+const $=sel=>document.querySelector(sel), app=$('#app');
+const clone=x=>JSON.parse(JSON.stringify(x));
+const claims=[{id:'ID.Claim.Time',name:'주장 1 · 사건 시각'},{id:'ID.Claim.Door',name:'주장 2 · 잠긴 문'}];
+const clues=[{id:'ID.Clue.Clock',name:'단서 1 · 멈춘 시계'},{id:'ID.Clue.Key',name:'단서 2 · 낡은 열쇠'},{id:'ID.Clue.Witness',name:'단서 3 · 목격자 진술'}];
+const actions=[{id:'Action.Interaction.InstallBug',name:'도청기 설치'},{id:'Action.Camera.Move',name:'카메라 이동'},{id:'Action.Meeting.WaitForSubmission',name:'주장·단서 제출 대기'}];
+const correct={'ID.Claim.Time':'ID.Clue.Clock','ID.Claim.Door':'ID.Clue.Key'};
+const defaults={
+interaction:{id:'Dialogue.Interaction.Survivor',entry:'D_Intro',version:1,
+lines:[
+{id:'Line_I01',text:'이 건물에는 무슨 일로 오셨나요?',speaker:'ID.Character.Survivor',portrait:'Normal'},
+{id:'Line_I02',text:'혹시 이 방에 장치를 설치하시려는 건가요?',speaker:'ID.Character.Survivor',portrait:'Sad'},
+{id:'Line_I03',text:'설치가 완료됐군요. 감사합니다.',speaker:'ID.Character.Survivor',portrait:'Happy'},
+{id:'Line_I04',text:'설치가 되지 않았습니다.',speaker:'ID.Character.Survivor',portrait:'Angry'},
+{id:'Line_I05',text:'알겠습니다. 다음에 다시 오세요.',speaker:'ID.Character.Survivor',portrait:'Normal'}],
+choices:[{id:'Choice_Install',text:'도청기를 설치한다.'},{id:'Choice_Leave',text:'그냥 돌아간다.'}],
+nodes:[
+{id:'D_Intro',type:'Dialogue',lines:['Line_I01','Line_I02'],choices:[{id:'Choice_Install',next:'A_Install'},{id:'Choice_Leave',next:'D_Leave'}],next:''},
+{id:'A_Install',type:'Action',action:'Action.Interaction.InstallBug',branches:[{result:'Success',next:'D_Success'},{result:'Failed',next:'D_Failed'}],combos:[]},
+{id:'D_Success',type:'Dialogue',lines:['Line_I03'],choices:[],next:'End_Main'},
+{id:'D_Failed',type:'Dialogue',lines:['Line_I04'],choices:[],next:'End_Main'},
+{id:'D_Leave',type:'Dialogue',lines:['Line_I05'],choices:[],next:'End_Main'},
+{id:'End_Main',type:'End'}]},
+meeting:{id:'Dialogue.Meeting.Case01',entry:'D_Intro',version:1,
+lines:[
+{id:'Line_M01',text:'제 주장을 반박할 증거가 있습니까?',speaker:'ID.Character.Suspect',portrait:'Normal'},
+{id:'Line_M02',text:'그 시계가 멈춘 시각이 증거라는 겁니까?',speaker:'ID.Character.Suspect',portrait:'Surprised'},
+{id:'Line_M03',text:'그 열쇠가 여기서 발견됐다고요?',speaker:'ID.Character.Suspect',portrait:'Angry'},
+{id:'Line_M04',text:'그 물건만으로는 제 주장을 반박할 수 없습니다.',speaker:'ID.Character.Suspect',portrait:'Normal'},
+{id:'Line_M05',text:'그 증언은 당시 상황과 맞지 않습니다.',speaker:'ID.Character.Suspect',portrait:'Angry'}],
+choices:[],
+nodes:[
+{id:'D_Intro',type:'Dialogue',lines:['Line_M01'],choices:[],next:'A_Submit'},
+{id:'A_Submit',type:'Action',action:'Action.Meeting.WaitForSubmission',branches:[],combos:[
+{claim:'ID.Claim.Time',clue:'ID.Clue.Clock',next:'D_CorrectTime'},
+{claim:'ID.Claim.Time',clue:'ID.Clue.Key',next:'D_WrongItem'},
+{claim:'ID.Claim.Time',clue:'ID.Clue.Witness',next:'D_WrongWitness'},
+{claim:'ID.Claim.Door',clue:'ID.Clue.Clock',next:'D_WrongItem'},
+{claim:'ID.Claim.Door',clue:'ID.Clue.Key',next:'D_CorrectDoor'},
+{claim:'ID.Claim.Door',clue:'ID.Clue.Witness',next:'D_WrongWitness'}]},
+{id:'D_CorrectTime',type:'Dialogue',lines:['Line_M02'],choices:[],next:'End_Main'},
+{id:'D_CorrectDoor',type:'Dialogue',lines:['Line_M03'],choices:[],next:'End_Main'},
+{id:'D_WrongItem',type:'Dialogue',lines:['Line_M04'],choices:[],next:'A_Submit'},
+{id:'D_WrongWitness',type:'Dialogue',lines:['Line_M05'],choices:[],next:'A_Submit'},
+{id:'End_Main',type:'End'}]}};
+let db=clone(defaults),mode='interaction',tab='play',selected='D_Intro',table='lines',graphView='map',play=null,logs=[],feedback='',flash='';
+const H=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const D=()=>db[mode],N=id=>D().nodes.find(x=>x.id===id),L=id=>D().lines.find(x=>x.id===id),C=id=>D().choices.find(x=>x.id===id);
+const short=id=>String(id||'').split('.').pop();
+const tagName=id=>[...claims,...clues].find(x=>x.id===id)?.name||id;
+const actionName=id=>actions.find(x=>x.id===id)?.name||id;
+function opts(arr,val,none){return (none===undefined?'':`<option value="">${H(none)}</option>`)+arr.map(x=>`<option value="${H(x.id)}" ${val===x.id?'selected':''}>${H(x.name||x.id)}</option>`).join('');}
+const nodeOpts=(val,none='— 연결 없음 —')=>opts(D().nodes.map(x=>({id:x.id,name:x.id+' · '+x.type})),val,none);
+function addLog(s){logs.push(s);if(logs.length>100)logs.shift();}
+function enter(id,depth=0){
+ if(!play)return;
+ if(depth>16){play.phase='error';addLog('오류: 자동 전이 반복 횟수 초과');return;}
+ let n=N(id);play.id=id;play.index=0;
+ if(!n){play.phase='error';addLog('오류: 없는 노드 '+id);return;}
+ addLog('Nodes.Find('+id+') → '+n.type);
+ if(n.type==='End'){play.phase='end';addLog('OnCompleted · 대화 완료');return;}
+ if(n.type==='Action'){play.phase='action';addLog('OnActionRequested · '+n.action);return;}
+ if(n.lines?.length){play.phase='line';addLog('OnLinePresented · '+n.lines[0]);}
+ else if(n.choices?.length){play.phase='choices';addLog('OnChoicesPresented');}
+ else if(n.next)enter(n.next,depth+1);
+ else{play.phase='error';addLog('오류: Lines / Choices / NextNodeID가 비어 있음');}
+}
+function start(){play={id:'',index:0,phase:'',claim:claims[0].id,clue:clues[0].id};logs=[];feedback='';enter(D().entry);render();}
+function continueDialogue(){let n=N(play?.id);if(!n||play.phase!=='line')return;
+ if(play.index+1<n.lines.length){play.index++;addLog('Continue → Lines['+play.index+'] · '+n.lines[play.index]);}
+ else if(n.choices.length){play.phase='choices';addLog('OnChoicesPresented · '+n.choices.length+'개');}
+ else if(n.next)enter(n.next);
+ else{play.phase='error';addLog('오류: 다음 노드가 지정되지 않음');}
+ render();}
+function selectChoice(i){let c=N(play?.id)?.choices?.[i];if(!c)return;addLog('SelectChoice('+c.id+') → '+c.next);enter(c.next);render();}
+function completeAction(result){let n=N(play?.id);if(!n||play.phase!=='action')return;
+ let b=(n.branches||[]).find(x=>x.result===result);addLog('CompleteAction('+n.id+', '+result+')');
+ if(b){feedback='Action 완료 결과: '+result;addLog('ResultID → NextNodeID: '+b.next);enter(b.next);}
+ else{play.phase='error';addLog('오류: ResultID 분기 누락');}
+ render();}
+function submitMeeting(){let n=N(play?.id);if(!n||play.phase!=='action')return;
+ let {claim,clue}=play,branch=(n.combos||[]).find(x=>x.claim===claim&&x.clue===clue),isCorrect=correct[claim]===clue;
+ addLog('UI → MeetingSystem: '+short(claim)+' + '+short(clue));
+ addLog('MeetingSystem 판정: '+(isCorrect?'Correct':'Incorrect'));
+ if(branch){feedback=(isCorrect?'정답':'오답')+' · '+tagName(claim)+' + '+tagName(clue);addLog('분기 ResultID: '+claim+'|'+clue);addLog('NextNodeID → '+branch.next);enter(branch.next);}
+ else{play.phase='error';addLog('오류: 해당 조합에 대한 분기 누락');}
+ render();}
+function edges(n){
+ if(n.type==='Dialogue')return n.choices?.length?n.choices.map(x=>({label:x.id,next:x.next})):n.next?[{label:'Next',next:n.next}]:[];
+ if(n.type==='Action')return n.action==='Action.Meeting.WaitForSubmission'?(n.combos||[]).map(x=>({label:short(x.claim)+'+'+short(x.clue),next:x.next})):(n.branches||[]).map(x=>({label:x.result,next:x.next}));
+ return [];
+}
+function issues(){const out=[];
+ for(let n of D().nodes){
+  for(let e of edges(n))if(!N(e.next))out.push(n.id+': 연결 대상 '+(e.next||'(비어 있음)')+' 없음');
+  if(n.type==='Dialogue'){
+   for(let l of n.lines)if(!L(l))out.push(n.id+': Line '+l+' 없음');
+   for(let c of n.choices)if(!C(c.id))out.push(n.id+': Choice '+c.id+' 없음');
+   if(!n.lines.length&&!n.choices.length&&!n.next)out.push(n.id+': 진행할 데이터 없음');
+  }
+  if(n.type==='Action'){
+   if(n.action==='Action.Meeting.WaitForSubmission'){
+    const keys=new Set();for(let c of n.combos){let key=c.claim+'|'+c.clue;if(keys.has(key))out.push(n.id+': 중복 조합 '+key);keys.add(key);}
+    for(let c of claims)for(let l of clues)if(!keys.has(c.id+'|'+l.id))out.push(n.id+': 등록하지 않은 조합 '+short(c.id)+' + '+short(l.id));
+   }else{if(!n.branches.length)out.push(n.id+': Action 분기 없음');if(new Set(n.branches.map(x=>x.result)).size!==n.branches.length)out.push(n.id+': ResultID 중복');}
+  }
+ }
+ return out;
+}
+function dataPage(){return `<h2>① Excel 데이터 편집</h2><div class="hint">기획자는 대사 내용·화자·표정과 선택지 문구를 작성해. <b>Row Name은 LineID / ChoiceID</b>로 재사용해.</div>
+<div class="btnrow"><button data-act="table" data-v="lines" class="${table==='lines'?'on':''}">대사 · ${D().lines.length}행</button><button data-act="table" data-v="choices" class="${table==='choices'?'on':''}">선택지 · ${D().choices.length}행</button></div>
+<div class="card"><h3>${table==='lines'?'FPFDialogueLineTableRow':'FPFDialogueChoiceTableRow'}</h3>
+${table==='lines'?D().lines.map(r=>`<div class="entry"><span class="badge mono">${H(r.id)}</span><label>Text · 대사</label><textarea rows="2" data-edit="line-text" data-id="${H(r.id)}">${H(r.text)}</textarea><div class="grid2"><div><label>SpeakerID</label><input data-edit="line-speaker" data-id="${H(r.id)}" value="${H(r.speaker)}"></div><div><label>PortraitType</label><select data-edit="line-portrait" data-id="${H(r.id)}">${opts(['Normal','Happy','Sad','Angry','Surprised'].map(id=>({id})),r.portrait)}</select></div></div></div>`).join(''):
+ D().choices.length?D().choices.map(r=>`<div class="entry"><span class="badge mono">${H(r.id)}</span><label>Text · 선택지</label><input data-edit="choice-text" data-id="${H(r.id)}" value="${H(r.text)}"></div>`).join(''):
+ '<div class="hint">회의 예제에는 일반 선택지가 없어. 주장·단서 입력은 Action 노드에서 받아.</div>'}
+<div class="btnrow"><button data-act="add-row">+ ${table==='lines'?'대사':'선택지'} 행 추가</button></div></div>
+<div class="card"><h3>작성용 데이터 → 런타임 데이터</h3><p class="muted small">Excel Row Name → LineID / ChoiceID<br>그래프에서 배치·연결 → Lines[] / Choices[] / NextNodeID<br>Unreal Importer → 최종 UPFDialogueDefinition</p></div>`;}
+function graphMap(){
+ const xy=mode==='interaction'?{D_Intro:[22,166],A_Install:[266,48],D_Leave:[266,300],D_Success:[506,22],D_Failed:[506,168],End_Main:[770,166]}:{D_Intro:[18,188],A_Submit:[245,188],D_CorrectTime:[501,17],D_CorrectDoor:[744,17],D_WrongItem:[501,194],D_WrongWitness:[501,342],End_Main:[990,95]};
+ const width=mode==='interaction'?980:1200,height=mode==='interaction'?440:495;
+ D().nodes.forEach((n,i)=>{if(!xy[n.id])xy[n.id]=[30+(i%5)*225,40+Math.floor(i/5)*110];});
+ const paths=[];const seen=new Set();
+ for(let n of D().nodes){for(let e of edges(n)){
+  let to=xy[e.next],from=xy[n.id];if(!to)continue;
+  let key=n.id+'>'+e.next;if(seen.has(key))continue;seen.add(key);
+  let startX=from[0]+165,startY=from[1]+36,endX=to[0],endY=to[1]+36;
+  let path=endX>startX?`M${startX} ${startY} C${startX+50} ${startY},${endX-55} ${endY},${endX} ${endY}`:`M${startX-70} ${from[1]+74} C${startX-100} ${height-16},${endX+90} ${height-16},${endX+76} ${to[1]+75}`;
+  paths.push(`<path d="${path}" fill="none" stroke="${n.type==='Action'?'#e4b779':'#86b8e2'}" stroke-width="2" opacity=".85" marker-end="url(#arrow)"/>`);
+ }}
+ return `<div class="graph-surface"><div class="graph-inner" style="width:${width}px;height:${height}px"><svg viewBox="0 0 ${width} ${height}" width="${width}" height="${height}"><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#c7dded" stroke-width="1.7"/></marker></defs>${paths.join('')}</svg>
+ ${D().nodes.map(n=>`<button data-act="node" data-id="${H(n.id)}" class="map-node ${n.type} ${selected===n.id?'on':''}" style="left:${xy[n.id][0]}px;top:${xy[n.id][1]}px"><span>${n.type}</span><strong>${H(n.id)}</strong><span>${n.type==='Action'?H(actionName(n.action)):n.type==='Dialogue'?n.lines.length+'개 대사':'대화 종료'}</span></button>`).join('')}
+ </div></div><div class="muted tiny" style="margin-bottom:12px">그래프를 스크롤해 노드를 눌러 봐. 아래에서 노드 속성을 편집할 수 있어.</div>`;
+}
+function graphList(){return D().nodes.map(n=>`<button data-act="node" data-id="${H(n.id)}" class="graphnode ${n.type} ${selected===n.id?'on':''}"><div class="row between"><strong class="mono">${H(n.id)}</strong><span class="badge ${n.type}">${n.type}</span></div><div class="desc">${n.type==='Dialogue'?H(n.lines.map(id=>L(id)?.text||id).join(' / ').slice(0,94)):n.type==='Action'?H(actionName(n.action)):'대화 종료'}</div><div class="desc">${edges(n).map(e=>H(e.label)+' → '+H(e.next||'(미지정)')).join(' · ')||'출력 연결 없음'}</div></button>`).join('');}
+function nodeEditor(){let n=N(selected);if(!n)return '<div class="card">선택된 노드가 없어.</div>';
+ let out=`<div class="card selected-card"><div class="row between"><h3 class="mono" style="margin:0">${H(n.id)}</h3><span class="badge ${n.type}">${n.type}</span></div><p class="muted tiny">노드 ID는 연결 안정성을 위해 여기서는 고정</p><div class="sep"></div>`;
+ if(n.type==='Dialogue'){
+  out+=`<h3>Lines[] · 대사 배치</h3>${n.lines.map((id,i)=>`<div class="branch"><div class="row between"><span class="muted tiny">Lines[${i}]</span><button data-act="remove-node-line" data-i="${i}">제거</button></div><select data-edit="node-line" data-i="${i}">${opts(D().lines.map(x=>({id:x.id,name:x.id+' · '+x.text.slice(0,24)})),id)}</select></div>`).join('')}<button data-act="add-node-line">+ 대사 배치</button><div class="sep"></div><h3>Choices[] · 일반 선택지</h3>
+  ${n.choices.map((c,i)=>`<div class="branch"><div class="row between"><b>선택지 ${i+1}</b><button data-act="remove-node-choice" data-i="${i}">제거</button></div><label>ChoiceID</label><select data-edit="node-choice-id" data-i="${i}">${opts(D().choices.map(x=>({id:x.id,name:x.id+' · '+x.text})),c.id)}</select><label>선택 시 NextNodeID</label><select data-edit="node-choice-next" data-i="${i}">${nodeOpts(c.next)}</select></div>`).join('')}<button data-act="add-node-choice" ${D().choices.length?'':'disabled'}>+ 선택지 배치</button><div class="sep"></div><label>선택지 없는 경우 NextNodeID</label><select data-edit="node-next" ${n.choices.length?'disabled':''}>${nodeOpts(n.next)}</select>`;
+ }else if(n.type==='Action'){
+  out+=`<label>ActionID · 사전 등록된 기능</label><select data-edit="node-action">${opts(actions.filter(a=>mode==='meeting'||a.id!=='Action.Meeting.WaitForSubmission'),n.action)}</select><p class="muted tiny">기획자는 ActionID를 선택하고 분기만 연결해. 기능 구현은 게임의 외부 시스템 담당.</p><div class="sep"></div>`;
+  if(n.action==='Action.Meeting.WaitForSubmission'){
+   out+=`<h3>주장·단서 조합 → NextNodeID</h3><div class="hint">등록된 GameplayTag에서 선택해. 서로 다른 조합이 같은 Dialogue 노드로 연결돼도 돼.</div>${(n.combos||[]).map((b,i)=>`<div class="branch"><div class="row between"><b class="tiny">조합 ${i+1}</b><button data-act="remove-combo" data-i="${i}">제거</button></div><label>ClaimID</label><select data-edit="combo-claim" data-i="${i}">${opts(claims,b.claim)}</select><label>ClueID</label><select data-edit="combo-clue" data-i="${i}">${opts(clues,b.clue)}</select><label>NextNodeID</label><select data-edit="combo-next" data-i="${i}">${nodeOpts(b.next)}</select></div>`).join('')}<button class="primary" data-act="add-combo">+ 주장·단서 조합 추가</button>`;
+  }else{
+   out+=`<h3>ResultID → NextNodeID</h3>${(n.branches||[]).map((b,i)=>`<div class="branch"><div class="row between"><b class="tiny">결과 분기 ${i+1}</b><button data-act="remove-action-branch" data-i="${i}">제거</button></div><label>ResultID</label><input data-edit="branch-result" data-i="${i}" value="${H(b.result)}"><label>NextNodeID</label><select data-edit="branch-next" data-i="${i}">${nodeOpts(b.next)}</select></div>`).join('')}<button data-act="add-action-branch">+ Action 분기 추가</button>`;
+  }
+ }else out+='<div class="complete-screen"><span class="tick">✓</span><h3>End 노드</h3><p>OnCompleted를 발생시키는 종료 지점이야.</p></div>';
+ if(n.id!==D().entry)out+=`<div class="sep"></div><button class="danger" data-act="remove-node">선택 노드 삭제</button>`;
+ return out+'</div>';
+}
+function graphPage(){const problems=issues();return `<h2>② 그래프 연결 편집</h2><div class="hint">대사 선택지는 Dialogue 노드 안에 있고, 별도의 Choice 노드는 없어. Action 노드에서 성공·실패 또는 주장·단서 조합별로 다음 노드를 연결해.</div>
+<div class="btnrow" style="margin:0 0 12px"><button data-act="graph-view" data-v="map" class="${graphView==='map'?'on':''}">연결 지도</button><button data-act="graph-view" data-v="list" class="${graphView==='list'?'on':''}">노드 목록</button></div>
+<div class="split"><div>${graphView==='map'?graphMap():graphList()}<div class="card"><h3>새 노드</h3><div class="row"><select id="new-node-type">${opts(['Dialogue','Action','End'].map(id=>({id})), 'Dialogue')}</select><button class="primary" data-act="add-node">추가</button></div></div><div class="card"><div class="row between"><b>연결 검증</b><span class="badge">문제 ${problems.length}개</span></div>${problems.length?`<p class="warntext small">${problems.slice(0,5).map(H).join('<br>')}${problems.length>5?'<br>…':''}</p>`:'<p class="goodtext small">현재 데이터에서 참조 및 분기 문제가 발견되지 않았어.</p>'}</div></div><div>${nodeEditor()}</div></div>`;}
+function playPage(){if(!play)return `<h2>③ 대화 실행</h2><div class="hint">대화 실행기에서 Continue, 선택지, Action 완료 결과, 주장·단서 제출을 직접 시험해 봐.</div><div class="card"><h3>${H(D().id)}</h3><p class="muted">EntryNodeID: <span class="mono">${H(D().entry)}</span></p><button class="primary" style="width:100%;margin-top:9px" data-act="start">▶ 대화 시작</button></div>`;
+ const n=N(play.id);let content='';
+ if(play.phase==='line'&&n){const l=L(n.lines[play.index]);content=`<div class="row between"><b>${H(short(l?.speaker||'Unknown'))}</b><span class="badge">${H(l?.portrait||'Normal')}</span></div><p class="muted tiny mono">LineID: ${H(n.lines[play.index])}</p><div class="dialogue-bubble">${H(l?.text||'대사 데이터 누락')}</div><button class="primary" style="width:100%" data-act="continue">Continue →</button>`;}
+ else if(play.phase==='choices'&&n){content=`<h3 style="font-size:17px">응답을 선택하세요</h3><p class="muted tiny">현재 노드: ${H(n.id)} · 선택지 ${n.choices.length}개</p>${n.choices.map((c,i)=>`<button class="choice-button" data-act="choose" data-i="${i}"><span>${i+1}. ${H(C(c.id)?.text||c.id)}</span><span class="minor mono">ChoiceID ${H(c.id)} → ${H(c.next)}</span></button>`).join('')}`;}
+ else if(play.phase==='action'&&n){
+  if(n.action==='Action.Meeting.WaitForSubmission')content=`<h3 style="font-size:17px">주장·단서 제출</h3><p class="muted">MeetingSystem이 제출 결과를 기다리고 있어.</p><label>주장 (ClaimID)</label><select data-edit="play-claim">${opts(claims,play.claim)}</select><label>단서 (ClueID)</label><select data-edit="play-clue">${opts(clues,play.clue)}</select><button class="primary" style="width:100%;margin-top:16px" data-act="submit">선택한 조합 제출</button><p class="muted tiny">예제 정답은 주장 1 + 단서 1, 주장 2 + 단서 2야.</p>`;
+  else content=`<h3>${H(actionName(n.action))}</h3><p class="muted">OnActionRequested가 발생했어. 아래에서 외부 시스템의 완료 결과를 골라 봐.</p>${(n.branches||[]).map(b=>`<button class="choice-button" data-act="action-result" data-v="${H(b.result)}">${H(b.result)} → ${H(b.next)}</button>`).join('')}`;
+ }else if(play.phase==='end')content=`<div class="complete-screen" role="status"><div class="tick">✓</div><h2>대화 완료</h2><p><strong class="mono" style="color:#fff!important">${H(play.id)}</strong> 노드에 도달했고 <strong>OnCompleted</strong>가 발생했어.</p></div>`;
+ else content='<div class="card" style="border-color:#db9898"><h3 style="color:#ffcbcb!important">실행 오류</h3><p style="color:#fff!important">그래프의 노드 연결 및 분기 설정을 확인해 줘.</p></div>';
+ return `<h2>③ 대화 실행</h2><div class="split"><div><div class="card"><div class="row between"><span class="badge ${n?.type||''}">${H(n?.type||'Error')}</span><span class="mono tiny" style="color:#fff!important">${H(play.id)}</span></div>${feedback?`<div class="hint" style="margin-top:13px">${H(feedback)}</div>`:''}<div style="margin-top:14px">${content}</div></div><div class="btnrow"><button data-act="start">↻ 처음부터</button><button data-act="tab" data-v="trace">전체 실행 추적 →</button></div></div><div class="card"><h3>최근 실행 로그</h3>${logs.slice(-7).map((x,i)=>`<div class="log-row"><span class="log-num">${logs.length-Math.min(logs.length,7)+i+1}</span><div class="grow">${H(x)}</div></div>`).join('')}</div></div>`;
+}
+function runtimeJSON(){let nodes={};for(let n of D().nodes){if(n.type==='End')nodes[n.id]={NodeType:'End'};else if(n.type==='Dialogue')nodes[n.id]={NodeType:'Dialogue',Lines:n.lines.map(id=>({LineID:id,SpeakerID:L(id)?.speaker,Text:L(id)?.text,PortraitVariant:L(id)?.portrait})),Choices:n.choices.map(c=>({ChoiceID:c.id,Text:C(c.id)?.text,NextNodeID:c.next})),NextNodeID:n.next||''};else nodes[n.id]={NodeType:'Action',ActionID:n.action,Branches:n.action==='Action.Meeting.WaitForSubmission'?n.combos.map(c=>({ResultID:c.claim+'|'+c.clue,NextNodeID:c.next})):n.branches.map(b=>({ResultID:b.result,NextNodeID:b.next}))};}return {DialogueID:D().id,DataVersion:D().version,EntryNodeID:D().entry,Nodes:nodes};}
+function tracePage(){let n=N(play?.id);let stats=[['CurrentNodeID',play?.id||'미시작'],['NodeType',n?.type||'—'],['LineIndex',play?.phase==='line'?play.index:'—'],['ActionID',n?.type==='Action'?n.action:'—'],['현재 실행 상태',play?.phase||'미시작'],['EntryNodeID',D().entry]];return `<h2>④ 런타임 데이터 · 실행 추적</h2><div class="hint">DialogueSubsystem은 Definition과 진행 상태를 보관하고, ResultID로 다음 노드를 조회해. 회의 정답 판정은 MeetingSystem에 남아 있어.</div><div class="card"><h3>현재 상태</h3><div class="grid2">${stats.map(([k,v])=>`<div class="stat"><div class="muted tiny">${H(k)}</div><div class="value mono">${H(v)}</div></div>`).join('')}</div></div><div class="card"><h3>전체 이벤트 기록</h3>${logs.length?logs.map((x,i)=>`<div class="log-row"><span class="log-num">${i+1}</span><div class="grow">${H(x)}</div></div>`).join(''):'<p class="muted">실행 탭에서 대화를 시작해 줘.</p>'}</div><div class="card"><div class="row between"><h3>DialogueDefinition 미리보기</h3><button data-act="export-runtime">JSON 저장</button></div><p class="muted tiny">실제 Unreal Importer 규격이 아니라 개념 검토용 JSON이야.</p><pre>${H(JSON.stringify(runtimeJSON(),null,2))}</pre></div>`;}
+function saveFile(name,content){const blob=new Blob([content],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function trySave(){try{localStorage.setItem('sih_dialogue_sim_v3',JSON.stringify(db));}catch(e){/* Some file viewers prohibit storage. JSON export remains available. */}}
+function loadSaved(){try{let v=localStorage.getItem('sih_dialogue_sim_v3');if(!v)return;let o=JSON.parse(v);if(o?.interaction?.nodes&&o?.meeting?.nodes)db=o;}catch(e){}}
+function render(){
+ const nav=[['data','① 엑셀'],['graph','② 그래프'],['play','③ 실행'],['trace','④ 추적']];
+ app.innerHTML=`<header><div class="wrap header-inner"><div class="eyebrow">PROJECT_SIH · OFFLINE PROTOTYPE</div><h1>대화 시스템 시뮬레이터</h1><div class="sub">데이터 작성 → 그래프 연결 → Action 분기 → 런타임 실행</div><div class="modes"><button data-act="mode" data-v="interaction" class="${mode==='interaction'?'on':''}">상호작용 대화</button><button data-act="mode" data-v="meeting" class="${mode==='meeting'?'on':''}">회의 대화</button></div></div></header>
+ <nav><div class="nav-buttons">${nav.map(([k,label])=>`<button class="${tab===k?'on':''}" data-act="tab" data-v="${k}">${label}</button>`).join('')}</div></nav>
+ <main class="wrap">${tab==='data'?dataPage():tab==='graph'?graphPage():tab==='play'?playPage():tracePage()}
+ <div class="card" style="margin-top:18px"><h3>편집 데이터 보관</h3><p class="muted tiny">자동 저장이 지원되는 브라우저에서는 변경 사항을 이 기기에 저장해. 다른 기기로 옮기거나 확실히 백업하려면 JSON 파일을 저장하고 불러와.</p><div class="btnrow"><button data-act="export-edit">편집 데이터 JSON 저장</button><button data-act="reset" class="danger">예제 초기화</button></div><label for="import-json">편집 데이터 JSON 불러오기</label><input type="file" accept=".json,application/json" id="import-json"><div class="file-note">※ 외부 API·CDN 없이 작동. 기기나 브라우저에 따라 자동 저장 기능은 제한될 수 있어.</div>${flash?`<div class="hint" role="status" style="margin-top:12px">${H(flash)}</div>`:''}</div></main>
+ <footer><div class="wrap">설계 검토용 독립 HTML · 실제 Unreal 에셋/GameplayTag Manager와 연결되어 있지 않음 · 예시 태그·데이터로 작동 · 모바일과 PC 브라우저 지원</div></footer>`;
+}
+app.addEventListener('click',e=>{
+ const b=e.target.closest('button[data-act]');if(!b)return;
+ const a=b.dataset.act,v=b.dataset.v,i=Number(b.dataset.i),n=N(selected);flash='';
+ if(a==='mode'){mode=v;selected=D().entry;play=null;logs=[];feedback='';}
+ else if(a==='tab')tab=v;
+ else if(a==='table')table=v;
+ else if(a==='graph-view')graphView=v;
+ else if(a==='node')selected=b.dataset.id;
+ else if(a==='start'){start();return;}
+ else if(a==='continue'){continueDialogue();return;}
+ else if(a==='choose'){selectChoice(i);return;}
+ else if(a==='action-result'){completeAction(v);return;}
+ else if(a==='submit'){submitMeeting();return;}
+ else if(a==='add-row'){
+  if(table==='lines'){let k=1;while(L('Line_New'+k))k++;D().lines.push({id:'Line_New'+k,text:'새 대사를 입력하세요.',speaker:'ID.Character.Survivor',portrait:'Normal'});}
+  else{let k=1;while(C('Choice_New'+k))k++;D().choices.push({id:'Choice_New'+k,text:'새 선택지'});}
+ }
+ else if(a==='add-node'){
+  let type=$('#new-node-type')?.value||'Dialogue',k=1,id;do{id=(type==='Dialogue'?'D_':type==='Action'?'A_':'End_')+'New'+k++;}while(N(id));
+  let o={id,type};if(type==='Dialogue')Object.assign(o,{lines:[],choices:[],next:''});if(type==='Action')Object.assign(o,{action:mode==='meeting'?'Action.Meeting.WaitForSubmission':'Action.Interaction.InstallBug',branches:[],combos:[]});D().nodes.push(o);selected=id;
+ }
+ else if(a==='remove-node'&&n&&n.id!==D().entry){D().nodes=D().nodes.filter(x=>x.id!==n.id);selected=D().entry;}
+ else if(a==='add-node-line'&&n&&D().lines.length)n.lines.push(D().lines[0].id);
+ else if(a==='remove-node-line'&&n)n.lines.splice(i,1);
+ else if(a==='add-node-choice'&&n&&D().choices.length)n.choices.push({id:D().choices[0].id,next:''});
+ else if(a==='remove-node-choice'&&n)n.choices.splice(i,1);
+ else if(a==='add-action-branch'&&n){let k=1;while(n.branches.some(x=>x.result==='Result_'+k))k++;n.branches.push({result:'Result_'+k,next:''});}
+ else if(a==='remove-action-branch'&&n)n.branches.splice(i,1);
+ else if(a==='add-combo'&&n){let missing=null;for(let c of claims){for(let l of clues){if(!n.combos.some(x=>x.claim===c.id&&x.clue===l.id)){missing={claim:c.id,clue:l.id,next:''};break;}}if(missing)break;}if(missing)n.combos.push(missing);else flash='모든 주장·단서 조합이 이미 등록되어 있어.';}
+ else if(a==='remove-combo'&&n)n.combos.splice(i,1);
+ else if(a==='export-edit'){saveFile('Project_SIH_dialogue_edit_data.json',JSON.stringify({format:'Project_SIH_Dialogue_Simulator',version:1,data:db},null,2));flash='편집 데이터를 JSON으로 저장했어.';}
+ else if(a==='export-runtime'){saveFile('Project_SIH_'+mode+'_runtime_preview.json',JSON.stringify(runtimeJSON(),null,2));flash='런타임 미리보기 JSON을 저장했어.';}
+ else if(a==='reset'){if(confirm('수정한 데이터를 모두 지우고 예제로 초기화할까?')){db=clone(defaults);play=null;logs=[];selected=D().entry;trySave();flash='예제 데이터로 초기화했어.';}}
+ if(!['tab','graph-view','node','mode'].includes(a))trySave();render();
+});
+app.addEventListener('change',async e=>{
+ const input=e.target;
+ if(input.id==='import-json'){
+  if(!input.files?.length)return;
+  try{const obj=JSON.parse(await input.files[0].text());let data=obj?.data||obj;
+    if(!data?.interaction?.nodes||!data?.meeting?.nodes||!Array.isArray(data.interaction.lines)||!Array.isArray(data.meeting.lines))throw Error('데이터 구조가 맞지 않아.');
+    db=data;play=null;logs=[];selected=D().entry;trySave();flash='JSON 데이터를 불러왔어.';
+  }catch(err){flash='불러오기 실패: '+err.message;}render();return;
+ }
+ const a=input.dataset.edit;if(!a)return;
+ const v=input.value,id=input.dataset.id,i=Number(input.dataset.i),n=N(selected);
+ if(a==='line-text'&&L(id))L(id).text=v;
+ else if(a==='line-speaker'&&L(id))L(id).speaker=v;
+ else if(a==='line-portrait'&&L(id))L(id).portrait=v;
+ else if(a==='choice-text'&&C(id))C(id).text=v;
+ else if(a==='node-line'&&n)n.lines[i]=v;
+ else if(a==='node-next'&&n)n.next=v;
+ else if(a==='node-choice-id'&&n)n.choices[i].id=v;
+ else if(a==='node-choice-next'&&n)n.choices[i].next=v;
+ else if(a==='node-action'&&n){n.action=v;n.combos=[];n.branches=v==='Action.Meeting.WaitForSubmission'?[]:[{result:'Success',next:''},{result:'Failed',next:''}];}
+ else if(a==='branch-result'&&n)n.branches[i].result=v;
+ else if(a==='branch-next'&&n)n.branches[i].next=v;
+ else if(a==='combo-claim'&&n)n.combos[i].claim=v;
+ else if(a==='combo-clue'&&n)n.combos[i].clue=v;
+ else if(a==='combo-next'&&n)n.combos[i].next=v;
+ else if(a==='play-claim'&&play)play.claim=v;
+ else if(a==='play-clue'&&play)play.clue=v;
+ if(!a.startsWith('play-')){trySave();render();}
+});
+loadSaved();render();
+})();
+</script>
+</body>
+</html>
