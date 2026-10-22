@@ -29,6 +29,8 @@
 
 ※ HTML 시뮬레이터는 설계 검토용 프로토타입이며, Unreal과 연결되는 자동 Importer는 구현 범위에 포함되지 않습니다.
 
+[HTML 프로토타입 소스 및 실행 파일](../Prototypes/Project_SIH_Dialogue_Simulator.html)
+
 ## 주요 코드
 
 - [PFDialogueTypes.h](../Project_SIH/000_Core/001_Contracts/006_Dialogue/PFDialogueTypes.h)
